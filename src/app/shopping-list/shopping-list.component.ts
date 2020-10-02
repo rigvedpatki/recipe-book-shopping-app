@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Ingredient } from '../shared/ingredient.model';
+import { IFormEvent, EFormEventType } from './shopping-edit/shopping-edit.component';
 
 @Component({
   selector: 'app-shopping-list',
@@ -16,6 +17,18 @@ export class ShoppingListComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  onFormEvent(event: IFormEvent): void {
+    if (event.eventType === EFormEventType.ADD) {
+      this.ingredients.push(event.data);
+    } else if (event.eventType === EFormEventType.DELETE) {
+      this.ingredients = this.ingredients.filter(ingredient => ingredient.name !== event.data.name && ingredient.amount !== event.data.amount);
+    } else if (event.eventType === EFormEventType.CLEAR) {
+      this.ingredients = [];
+    } else {
+      console.log('Invalid form action in shopping-edit')
+    }
   }
 
 }

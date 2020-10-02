@@ -1,14 +1,14 @@
 <!-- App Header -->
-<app-header></app-header>
+<app-header (displayComponent)="onHearderEvent($event)"></app-header>
 <div class="container">
   <!-- Recipes -->
-  <div class="row">
+  <div class="row" *ngIf="componentToBeDisplayed === typeOfComponents.RECIPES">
     <div class="col-md-12">
       <app-recipes></app-recipes>
     </div>
   </div>
   <!-- Shopping List  -->
-  <div class="row">
+  <div class="row" *ngIf="componentToBeDisplayed === typeOfComponents.SHOPPINGLIST">
     <div class="col-md-12">
       <app-shopping-list></app-shopping-list>
     </div>
