@@ -1,5 +1,6 @@
-import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Ingredient } from 'src/app/shared/ingredient.model';
+import { ShoppingListService } from '../shopping-list.service';
 
 @Component({
   selector: 'app-shopping-edit',
@@ -11,9 +12,7 @@ export class ShoppingEditComponent implements OnInit {
   @ViewChild('nameInput') name: ElementRef<HTMLInputElement>;
   @ViewChild('amountInput') amount: ElementRef<HTMLInputElement>;
 
-  @Output() formAction = new EventEmitter<IFormEvent>();
-
-  constructor() { }
+  constructor(private shoppingListService: ShoppingListService) { }
 
   ngOnInit(): void {
   }
@@ -21,10 +20,8 @@ export class ShoppingEditComponent implements OnInit {
   onAddItem(event: Event): void {
     event.preventDefault();
     if (this.name.nativeElement.value && this.amount.nativeElement.value) {
-      this.formAction.emit({
-        eventType: EFormEventType.ADD,
-        data: new Ingredient(this.name.nativeElement.value, parseFloat(this.amount.nativeElement.value))
-      });
+      this.shoppingListService.addIngredientToShoppingList(new Ingredient(this.name.nativeElement.value,
+        parseFloat(this.amount.nativeElement.value)));
       this.name.nativeElement.value = null;
       this.amount.nativeElement.value = null;
     } else {
@@ -35,10 +32,10 @@ export class ShoppingEditComponent implements OnInit {
 
   onDeleteItem(): void {
     if (this.name.nativeElement.value && this.amount.nativeElement.value) {
-      this.formAction.emit({
-        eventType: EFormEventType.DELETE,
-        data: new Ingredient(this.name.nativeElement.value, parseFloat(this.amount.nativeElement.value))
-      });
+      this.shoppingListService.removeIngredientFromShoppingList(
+        this.name.nativeElement.value,
+        parseFloat(this.amount.nativeElement.value)
+      )
       this.name.nativeElement.value = null;
       this.amount.nativeElement.value = null;
     } else {
@@ -48,20 +45,7 @@ export class ShoppingEditComponent implements OnInit {
   }
 
   onClearAll(): void {
-    this.formAction.emit({
-      eventType: EFormEventType.CLEAR
-    });
+    this.shoppingListService.clearShoppingList();
   }
 
-}
-
-export enum EFormEventType {
-  ADD = 'addItem',
-  DELETE = 'deleteItem',
-  CLEAR = 'clearAll'
-}
-
-export interface IFormEvent {
-  eventType: EFormEventType,
-  data?: Ingredient
 }

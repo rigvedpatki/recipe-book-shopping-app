@@ -1,34 +1,31 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { Ingredient } from '../shared/ingredient.model';
-import { IFormEvent, EFormEventType } from './shopping-edit/shopping-edit.component';
+import { ShoppingListService } from './shopping-list.service';
 
 @Component({
   selector: 'app-shopping-list',
   templateUrl: './shopping-list.component.html',
   styleUrls: ['./shopping-list.component.css']
 })
-export class ShoppingListComponent implements OnInit {
+export class ShoppingListComponent implements OnInit, OnDestroy {
 
-  ingredients: Array<Ingredient> = [
-    new Ingredient('Ingredient 1', 10),
-    new Ingredient('Ingredient 1', 5)
-  ]
+  ingredients: Array<Ingredient>;
 
-  constructor() { }
+  private subs: Array<Subscription>
+
+  constructor(private shoppingListService: ShoppingListService) { }
 
   ngOnInit(): void {
+    this.ingredients = this.shoppingListService.getAllIngredients();
+    let sub1 = this.shoppingListService.ingredientsChanged.subscribe((ingredients: Array<Ingredient>) => {
+      this.ingredients = ingredients;
+    });
+    this.subs = [sub1];
   }
 
-  onFormEvent(event: IFormEvent): void {
-    if (event.eventType === EFormEventType.ADD) {
-      this.ingredients.push(event.data);
-    } else if (event.eventType === EFormEventType.DELETE) {
-      this.ingredients = this.ingredients.filter(ingredient => ingredient.name !== event.data.name && ingredient.amount !== event.data.amount);
-    } else if (event.eventType === EFormEventType.CLEAR) {
-      this.ingredients = [];
-    } else {
-      console.log('Invalid form action in shopping-edit')
-    }
+  ngOnDestroy(): void {
+    this.subs.forEach(sub => sub.unsubscribe());
   }
 
 }
