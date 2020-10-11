@@ -5,10 +5,12 @@
   </div>
   <div class="col-md-7">
     <!-- Recipe Details -->
-    <app-recipe-detail [recipeDetails]="selectedRecipe" *ngIf="selectedRecipe; else infoText">
+    <!-- <app-recipe-detail [recipeDetails]="selectedRecipe" *ngIf="selectedRecipe; else infoText">
     </app-recipe-detail>
     <ng-template #infoText>
       <p>Please select recipe !</p>
-    </ng-template>
+    </ng-template> -->
+    <!-- Router outlet for children  -->
+    <router-outlet></router-outlet>
   </div>
 </div>
