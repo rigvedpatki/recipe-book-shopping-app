@@ -48,10 +48,19 @@ export class RecipeService {
     this.shoppingListService.addIngredientsToShoppingList(ingredients);
   }
 
-  addRecipe(recipe: Recipe): void {
+  addRecipe(recipe: Recipe): number {
     this.recipes.push(recipe);
+    const index = this.recipes.length - 1;
     this.onRecipesChange.next(this.recipes.slice());
+    return index
   }
 
-
+  updateRecipeById(id: number, recipe: Recipe): void {
+    if (this.recipes[id]) {
+      this.recipes[id] = recipe;
+      this.onRecipesChange.next(this.recipes.slice());
+    } else {
+      console.log(`Recipe with id ${id} not found`)
+    }
+  }
 }

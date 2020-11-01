@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Ingredient } from 'src/app/shared/ingredient.model';
 import { Recipe } from '../recipe.model';
@@ -20,7 +20,7 @@ export class RecipeEditComponent implements OnInit, OnDestroy {
   recipeImageInvalid: boolean;
   private subscriptions: Subscription[];
 
-  constructor(private route: ActivatedRoute, private formBuilder: FormBuilder, private recipeService: RecipeService) {
+  constructor(private route: ActivatedRoute, private formBuilder: FormBuilder, private recipeService: RecipeService, private router: Router) {
     this.recipeImagePath = '';
     this.subscriptions = [];
     this.recipeImageInvalid = true;
@@ -46,6 +46,17 @@ export class RecipeEditComponent implements OnInit, OnDestroy {
       this.recipeImagePath = url;
     });
 
+    if (this.editMode) {
+      const recipe = this.recipeService.getRecipeById(this.id);
+      recipe.ingredients.forEach(() => this.onAddIngredient());
+      this.recipeForm.patchValue({
+        name: recipe.name,
+        description: recipe.description,
+        imagePath: recipe.imagePath,
+        ingredients: recipe.ingredients
+      });
+    }
+
     this.subscriptions.push(imagePathSub);
   }
 
@@ -61,7 +72,14 @@ export class RecipeEditComponent implements OnInit, OnDestroy {
       this.recipeForm.value.imagePath,
       ingredients
     );
-    this.recipeService.addRecipe(newRecipe);
+    if (this.editMode) {
+      this.recipeService.updateRecipeById(this.id, newRecipe);
+      this.router.navigate(['../'], { relativeTo: this.route });
+    } else {
+      const index = this.recipeService.addRecipe(newRecipe);
+      this.router.navigate(['../', index], { relativeTo: this.route });
+    }
+
   }
 
   onCancel(): void {
@@ -112,7 +130,7 @@ export class RecipeEditComponent implements OnInit, OnDestroy {
   }
 
   disableForm(): boolean {
-    if (this.recipeForm.invalid === false && this.recipeImageInvalid === false) {
+    if (this.recipeForm.invalid === false && this.recipeImageInvalid === false && this.recipeForm.touched === true) {
       return false
     } else {
       return true
