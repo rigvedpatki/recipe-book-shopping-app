@@ -1,4 +1,6 @@
-import { Component, ElementRef, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { Ingredient } from 'src/app/shared/ingredient.model';
 import { ShoppingListService } from '../shopping-list.service';
 
@@ -7,46 +9,62 @@ import { ShoppingListService } from '../shopping-list.service';
   templateUrl: './shopping-edit.component.html',
   styleUrls: ['./shopping-edit.component.css']
 })
-export class ShoppingEditComponent implements OnInit, AfterViewInit {
+export class ShoppingEditComponent implements OnInit, OnDestroy {
 
-  @ViewChild('nameInput') name: ElementRef<HTMLInputElement>;
-  @ViewChild('amountInput') amount: ElementRef<HTMLInputElement>;
+  private subscriptions: Subscription[];
 
-  constructor(private shoppingListService: ShoppingListService) { }
+  public editMode: boolean;
 
-  ngOnInit(): void { }
+  public editIngredientIndex: number;
 
-  ngAfterViewInit(): void { }
+  public editIngredient: Ingredient;
 
-  onAddItem(event: Event): void {
-    event.preventDefault();
-    if (this.name.nativeElement.value && this.amount.nativeElement.value) {
-      this.shoppingListService.addIngredientToShoppingList(new Ingredient(this.name.nativeElement.value,
-        parseFloat(this.amount.nativeElement.value)));
-      this.name.nativeElement.value = null;
-      this.amount.nativeElement.value = null;
+  @ViewChild('formRef') shoppingFormRef: NgForm;
+
+  constructor(private shoppingListService: ShoppingListService) {
+    this.editMode = false;
+    this.subscriptions = [];
+  }
+
+  ngOnInit(): void {
+    const editSub = this.shoppingListService.editIngredient
+      .subscribe(
+        (index: number) => {
+          this.editMode = true;
+          this.editIngredientIndex = index;
+          this.editIngredient = this.shoppingListService.getIngredientById(this.editIngredientIndex);
+          this.shoppingFormRef.setValue({
+            name: this.editIngredient.name,
+            amount: this.editIngredient.amount
+          });
+        }
+      );
+    this.subscriptions.push(editSub);
+  }
+
+  onAddOrEditItem(): void {
+    const ingredient = this.shoppingFormRef.value;
+    const newIngredient = new Ingredient(ingredient.name, parseFloat(ingredient.amount));
+    if (this.editMode) {
+      this.shoppingListService.updateIngredientById(this.editIngredientIndex, newIngredient);
     } else {
-      console.log('Name or amount is null')
+      this.shoppingListService.addIngredientToShoppingList(newIngredient);
     }
-
+    this.onClearAll();
   }
 
   onDeleteItem(): void {
-    if (this.name.nativeElement.value && this.amount.nativeElement.value) {
-      this.shoppingListService.removeIngredientFromShoppingList(
-        this.name.nativeElement.value,
-        parseFloat(this.amount.nativeElement.value)
-      )
-      this.name.nativeElement.value = null;
-      this.amount.nativeElement.value = null;
-    } else {
-      console.log('Name or amount is null')
-    }
-
+    this.shoppingListService.removeIngredientFromShoppingList(this.editIngredientIndex);
+    this.onClearAll();
   }
 
   onClearAll(): void {
-    this.shoppingListService.clearShoppingList();
+    this.shoppingFormRef.reset();
+    this.editMode = false;
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((sub: Subscription) => sub.unsubscribe());
   }
 
 }

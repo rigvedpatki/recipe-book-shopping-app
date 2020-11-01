@@ -1,1 +1,115 @@
-<p>recipe-edit works!</p>
+<div class="row">
+  <div class="col-xs-12">
+    <form [formGroup]="recipeForm" (ngSubmit)="onSubmit()">
+      <!-- Buttons  -->
+      <div class="row">
+        <div class="col-xs-12">
+          <button class="btn btn-success" type="submit"
+            [disabled]="disableForm()">{{ editMode ? 'Update' : 'Submit'}}</button>
+          <span class="pull-right">
+            <button class="btn btn-danger" type="button" [disabled]="recipeForm.untouched"
+              (click)="onCancel()">Cancel</button>
+          </span>
+        </div>
+      </div>
+      <!-- Recipe Name  -->
+      <div class="row" style="margin-top: 1em;">
+        <div class="col-xs-12">
+          <div class="form-group">
+            <label for="name"> Name * </label>
+            <input type="text" id="name" class="form-control" formControlName="name">
+            <span *ngIf="isFormControlInvalid('name')" class="error-block">
+              <span *ngIf="getRecipeFormControl('name').errors['required']">
+                Recipe Name is required !
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+      <!-- Recipe Image Path -->
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="form-group">
+            <label for="imagePath"> Image Path * </label>
+            <input type="url" id="imagePath" class="form-control" formControlName="imagePath">
+            <span *ngIf="isFormControlInvalid('imagePath')" class="error-block">
+              <span *ngIf="getRecipeFormControl('imagePath').errors['required']">
+                Recipe Image Path is required !
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+      <!-- Recipe Image  -->
+      <div class="row" *ngIf="recipeImagePath">
+        <div class="col-xs-12">
+          <div class="form-group">
+            <img [src]="recipeImagePath" class="img-responsive center" (error)="onImageError($event)"
+              (load)="onImageLoad($event)">
+          </div>
+        </div>
+      </div>
+      <!-- Recipe Description  -->
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="form-group">
+            <label for="description">Description * </label>
+            <textarea id="description" rows="6" class="form-control" formControlName="description"></textarea>
+            <span *ngIf="isFormControlInvalid('description')" class="error-block">
+              <span *ngIf="getRecipeFormControl('description').errors['required']">
+                Recipe Description is required !
+              </span>
+              <span *ngIf="getRecipeFormControl('description').errors['maxlength']">
+                Recipe Description can not be more than
+                {{getRecipeFormControl('description').errors['maxlength']['requiredLength']}} characters, it is
+                {{getRecipeFormControl('description').errors['maxlength']['actualLength']}} !
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+      <!-- Buttons  -->
+      <div class="row" style="margin-bottom: 1em;">
+        <div class="col-xs-12">
+          <button class="btn btn-success" type="button" (click)="onAddIngredient()"
+            [disabled]="ingredients.length > 10">Add Ingredient</button>
+        </div>
+      </div>
+      <!-- List of Ingedients  -->
+      <div class="row" formArrayName="ingredients" *ngFor="let ingredient of ingredients.controls; let i = index">
+        <div class="col-xs-12" [formGroupName]="i">
+          <div class="row">
+            <div class="col-xs-5 form-group">
+              <label for="name"> Ingredient Name *</label>
+              <input type="text" id="name" class="form-control" formControlName="name">
+              <span *ngIf="isFormArrayFormControlInvalid(i, 'name')" class="error-block">
+                <span *ngIf="getIngredientsFormContol(i, 'name').errors['required']">
+                  Ingedient Name is required !
+                </span>
+              </span>
+            </div>
+            <div class="col-xs-4 form-group">
+              <label for="amount"> Amount *</label>
+              <div class="input-group">
+                <span class="input-group-addon">₹</span>
+                <input type="number" id="amount" class="form-control" formControlName="amount">
+              </div>
+              <span *ngIf="isFormArrayFormControlInvalid(i, 'amount')" class="error-block">
+                <span *ngIf="getIngredientsFormContol(i, 'amount').errors['required']">
+                  Ingedient Amount is required !
+                </span>
+                <span *ngIf="getIngredientsFormContol(i, 'amount').errors['pattern']">
+                  Ingedient Amount can not be negative !
+                </span>
+              </span>
+            </div>
+            <div class="col-xs-3 form-group">
+              <button class="btn btn-danger" type="button" style="margin-top: 25px;" (click)="onDeleteIngredient(i)">
+                Delete </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

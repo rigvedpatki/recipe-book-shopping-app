@@ -9,6 +9,7 @@ export class RecipeService {
 
 
   private recipes: Array<Recipe>;
+  public onRecipesChange: Subject<Recipe[]>;
 
   constructor(private shoppingListService: ShoppingListService) {
     this.recipes = [
@@ -32,6 +33,7 @@ export class RecipeService {
           new Ingredient('Rose Water', 150)
         ]),
     ]
+    this.onRecipesChange = new Subject();
   }
 
   getAllRecipes(): Array<Recipe> {
@@ -44,6 +46,11 @@ export class RecipeService {
 
   addIngredientsToShoppingList(ingredients: Array<Ingredient>): void {
     this.shoppingListService.addIngredientsToShoppingList(ingredients);
+  }
+
+  addRecipe(recipe: Recipe): void {
+    this.recipes.push(recipe);
+    this.onRecipesChange.next(this.recipes.slice());
   }
 
 

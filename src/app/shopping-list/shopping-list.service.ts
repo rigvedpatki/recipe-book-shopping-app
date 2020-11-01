@@ -9,16 +9,34 @@ export class ShoppingListService {
 
   public ingredientsChanged: Subject<Array<Ingredient>>;
 
+  public editIngredient: Subject<number>;
+
   constructor() {
     this.ingredients = [
       new Ingredient('Ingredient 1', 10),
       new Ingredient('Ingredient 1', 5)
     ];
     this.ingredientsChanged = new Subject();
+    this.editIngredient = new Subject();
   }
 
   getAllIngredients(): Array<Ingredient> {
     return this.ingredients.slice();
+  }
+
+  getIngredientById(index: number): Ingredient {
+    if (this.ingredients[index]) {
+      return this.ingredients[index];
+    } else {
+      return null
+    }
+  }
+
+  updateIngredientById(index: number, ingredient: Ingredient): void {
+    if (this.ingredients[index]) {
+      this.ingredients[index] = ingredient;
+      this.ingredientsChanged.next(this.ingredients.slice());
+    }
   }
 
   addIngredientToShoppingList(ingredient: Ingredient): void {
@@ -31,18 +49,10 @@ export class ShoppingListService {
     this.ingredientsChanged.next(this.ingredients.slice());
   }
 
-  removeIngredientFromShoppingList(name: string, amount: number): void {
-    const index = this.ingredients.findIndex((ingredient) => ingredient.name === name && ingredient.amount === amount);
+  removeIngredientFromShoppingList(index: number): void {
     if (this.ingredients[index]) {
       this.ingredients.splice(index, 1);
       this.ingredientsChanged.next(this.ingredients.slice());
-    } else {
-      console.log(`Ingredient with index ${index} in not present`)
     }
-  }
-
-  clearShoppingList(): void {
-    this.ingredients = [];
-    this.ingredientsChanged.next(this.ingredients.slice());
   }
 }

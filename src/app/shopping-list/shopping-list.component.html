@@ -5,8 +5,13 @@
     <hr>
     <!-- List of Shooping Items  -->
     <ul class="list-group">
-      <a class="list-group-item" style="cursor: pointer;" *ngFor="let ingredient of ingredients">
+      <a class="list-group-item" style="cursor: pointer;" *ngFor="let ingredient of ingredients; let i = index">
         {{ ingredient.name }} ({{ ingredient.amount }})
+        <span class="pull-right">
+          <span class="btn btn-xs btn-default">
+            <span class="glyphicon glyphicon-pencil" (click)="onEditIngredient(i)"></span>
+          </span>
+        </span>
       </a>
     </ul>
   </div>

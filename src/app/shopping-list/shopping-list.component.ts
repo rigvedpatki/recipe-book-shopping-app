@@ -30,4 +30,8 @@ export class ShoppingListComponent implements OnInit, OnDestroy {
     this.subs.forEach(sub => sub.unsubscribe());
   }
 
+  onEditIngredient(index: number): void {
+    this.shoppingListService.editIngredient.next(index);
+  }
+
 }
