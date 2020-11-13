@@ -1,6 +1,6 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-
-import { EDisplayComponent } from '../shared/types'
+import { Component, OnInit } from '@angular/core';
+import { subscribeOn } from 'rxjs/operators';
+import { DataStorageService } from '../shared/data-storage.service';
 
 @Component({
   selector: 'app-header',
@@ -11,11 +11,18 @@ export class HeaderComponent implements OnInit {
 
   collapsed: boolean = true;
 
-  typeOfComponent = EDisplayComponent;
-
-  constructor() { }
+  constructor(private dataStorageService: DataStorageService) { }
 
   ngOnInit(): void {
+  }
+
+  onSaveData() {
+    this.dataStorageService.saveRecipes();
+  }
+
+  onFetchData() {
+    this.dataStorageService.fetchRecipes()
+      .subscribe();
   }
 
 }

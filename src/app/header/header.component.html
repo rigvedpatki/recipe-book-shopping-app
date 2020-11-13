@@ -22,6 +22,8 @@
 
         <li routerLinkActive="active"> <a [routerLink]="['shopping-list']"> Shopping List </a> </li>
 
+        <li routerLinkActive="active"> <a [routerLink]="['auth']"> Authenticate </a> </li>
+
       </ul>
 
       <ul class="nav navbar-nav navbar-right">
@@ -36,9 +38,9 @@
 
           <ul class="dropdown-menu open">
 
-            <li> <a style="cursor: pointer;"> Save Data</a> </li>
+            <li> <a style="cursor: pointer;" (click)="onSaveData()"> Save Data</a> </li>
 
-            <li> <a style="cursor: pointer;"> Fetch Data</a> </li>
+            <li> <a style="cursor: pointer;" (click)="onFetchData()"> Fetch Data</a> </li>
 
           </ul>
 
