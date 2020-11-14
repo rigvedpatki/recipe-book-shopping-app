@@ -1,7 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators'
+import { exhaustMap, map, take, tap } from 'rxjs/operators'
+import { AuthService } from '../auth/auth.service';
+import { User } from '../auth/user.model';
 import { Recipe } from '../recipes/recipe.model';
 import { RecipeService } from '../recipes/recipe.service';
 import { Ingredient } from './ingredient.model';
@@ -9,7 +11,7 @@ import { Ingredient } from './ingredient.model';
 @Injectable()
 export class DataStorageService {
 
-  constructor(private http: HttpClient, private recipeService: RecipeService) { }
+  constructor(private http: HttpClient, private recipeService: RecipeService, private authService: AuthService) { }
 
   saveRecipes(): void {
     const recipes = this.recipeService.getAllRecipes();

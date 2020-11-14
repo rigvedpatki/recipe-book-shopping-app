@@ -1,17 +1,47 @@
 <div class="row">
   <div class="col-xs-12 col-md-6 col-md-offset-3">
-    <form>
+    <div class="alert alert-danger alert-dismissible" role="alert" *ngIf="error">
+      <button type="button" class="close" (click)="onAlertClose()" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <p> {{ error }} </p>
+    </div>
+    <div *ngIf="isLoading" style="text-align: center;">
+      <app-loading-spinner></app-loading-spinner>
+    </div>
+    <form [formGroup]="authFormGroup" (ngSubmit)="onAuthSubmit()" *ngIf="!isLoading">
       <div class="form-group">
         <label for="email"> E-mail </label>
-        <input type="email" id="email" class="form-control">
+        <input type="email" id="email" class="form-control" formControlName="email">
+        <span *ngIf="authFormGroup.get('email').invalid && authFormGroup.get('email').touched" class="error-block">
+          <span *ngIf="authFormGroup.get('email').errors['required']">
+            Email is Required !
+          </span>
+          <span *ngIf="authFormGroup.get('email').errors['email']">
+            Invalid email !
+          </span>
+        </span>
       </div>
       <div class="form-group">
         <label for="password"> Password </label>
-        <input type="password" id="password" class="form-control">
+        <input type="password" id="password" class="form-control" formControlName="password">
+        <span *ngIf="authFormGroup.get('password').invalid && authFormGroup.get('password').touched"
+          class="error-block">
+          <span *ngIf="authFormGroup.get('password').errors['required']">
+            Password is Required !
+          </span>
+          <span *ngIf="authFormGroup.get('password').errors['minlength']">
+            Pasword should be atleast 6 character long !
+          </span>
+        </span>
       </div>
       <div>
-        <button class="btn btn-primary" style="margin-right: 1em;"> Sign Up</button>
-        <button class="btn btn-primary"> Switch to Login</button>
+        <button class="btn btn-primary" style="margin-right: 1em;" type="submit" [disabled]="authFormGroup.invalid">
+          {{ isLoginMode ? 'Login' : 'Sign up'}}
+        </button>
+        <button class="btn btn-primary" (click)="onSwitchMode()" type="button">
+          Switch to {{ isLoginMode ? 'Sign up' : 'Login'}}
+        </button>
       </div>
     </form>
   </div>
