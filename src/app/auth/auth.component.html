@@ -1,11 +1,13 @@
+<ng-template appPlaceholder></ng-template>
 <div class="row">
   <div class="col-xs-12 col-md-6 col-md-offset-3">
-    <div class="alert alert-danger alert-dismissible" role="alert" *ngIf="error">
+    <!-- <div class="alert alert-danger alert-dismissible" role="alert" *ngIf="error">
       <button type="button" class="close" (click)="onAlertClose()" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
       <p> {{ error }} </p>
-    </div>
+    </div> -->
+    <!-- <app-alert [message]="error" (close)="onAlertClose()" *ngIf="error"></app-alert> -->
     <div *ngIf="isLoading" style="text-align: center;">
       <app-loading-spinner></app-loading-spinner>
     </div>

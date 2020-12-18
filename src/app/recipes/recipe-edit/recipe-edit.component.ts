@@ -14,13 +14,18 @@ import { RecipeService } from '../recipe.service';
 export class RecipeEditComponent implements OnInit, OnDestroy {
 
   id: number;
-  editMode: boolean = false;
+  editMode = false;
   recipeImagePath: string;
   recipeForm: FormGroup;
   recipeImageInvalid: boolean;
   private subscriptions: Subscription[];
 
-  constructor(private route: ActivatedRoute, private formBuilder: FormBuilder, private recipeService: RecipeService, private router: Router) {
+  constructor(
+    private route: ActivatedRoute,
+    private formBuilder: FormBuilder,
+    private recipeService: RecipeService,
+    private router: Router
+  ) {
     this.recipeImagePath = '';
     this.subscriptions = [];
     this.recipeImageInvalid = true;
@@ -29,9 +34,9 @@ export class RecipeEditComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.route.params.subscribe(
       (params: Params) => {
-        this.id = +params['id'];
+        this.id = +params.id;
         // check if in edit mode
-        this.editMode = params['id'] != null;
+        this.editMode = params.id != null;
       }
     );
 
@@ -60,8 +65,8 @@ export class RecipeEditComponent implements OnInit, OnDestroy {
     this.subscriptions.push(imagePathSub);
   }
 
-  get ingredients() {
-    return (<FormArray>this.recipeForm.get('ingredients'));
+  get ingredients(): FormArray {
+    return (this.recipeForm.get('ingredients') as FormArray);
   }
 
   onSubmit(): void {
@@ -108,7 +113,7 @@ export class RecipeEditComponent implements OnInit, OnDestroy {
   }
 
   getIngredientsFormContol(index: number, formControlName: string): AbstractControl {
-    return this.ingredients.at(index).get(formControlName)
+    return this.ingredients.at(index).get(formControlName);
   }
 
   isFormControlInvalid(formControlName: string): boolean {
@@ -120,20 +125,20 @@ export class RecipeEditComponent implements OnInit, OnDestroy {
     return formControl.invalid && formControl.touched;
   }
 
-  onImageError(error) {
+  onImageError(error): void {
     this.recipeImageInvalid = true;
   }
 
-  onImageLoad(payload) {
+  onImageLoad(payload): void {
 
     this.recipeImageInvalid = false;
   }
 
   disableForm(): boolean {
     if (this.recipeForm.invalid === false && this.recipeImageInvalid === false && this.recipeForm.touched === true) {
-      return false
+      return false;
     } else {
-      return true
+      return true;
     }
   }
 }

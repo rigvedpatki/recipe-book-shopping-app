@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { Recipe } from '../recipe.model'
+import { Recipe } from '../recipe.model';
 import { RecipeService } from '../recipe.service';
 
 @Component({
@@ -17,7 +17,7 @@ export class RecipeListComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[];
 
   constructor(private recipeService: RecipeService, private router: Router, private route: ActivatedRoute) {
-    this.subscriptions = []
+    this.subscriptions = [];
   }
 
   ngOnInit(): void {

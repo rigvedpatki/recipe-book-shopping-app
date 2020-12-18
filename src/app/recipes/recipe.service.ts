@@ -53,7 +53,7 @@ export class RecipeService {
     this.recipes.push(recipe);
     const index = this.recipes.length - 1;
     this.onRecipesChange.next(this.recipes.slice());
-    return index
+    return index;
   }
 
   deleteRecipe(index: number): void {
@@ -75,7 +75,7 @@ export class RecipeService {
       this.recipes[id] = recipe;
       this.onRecipesChange.next(this.recipes.slice());
     } else {
-      console.log(`Recipe with id ${id} not found`)
+      console.log(`Recipe with id ${id} not found`);
     }
   }
 }

@@ -1,24 +1,34 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ComponentFactoryResolver, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { IAuthLoginResponse, IAuthSignupResponse } from './auth.model';
 import { AuthService } from './auth.service';
+import { AlertComponent } from '../shared/alert/alert.component';
+import { PlaceholderDirective } from '../shared/directives/placeholder.directive';
 
 @Component({
   selector: 'app-auth',
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.css']
 })
-export class AuthComponent implements OnInit {
+export class AuthComponent implements OnInit, OnDestroy {
 
   isLoginMode: boolean;
   isLoading: boolean;
   error: string;
   authFormGroup: FormGroup;
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
-  }
+  @ViewChild(PlaceholderDirective) alerHost: PlaceholderDirective;
+
+  private alerComponentSub: Subscription;
+
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router,
+    private componentFactoryResolver: ComponentFactoryResolver
+  ) { }
 
   ngOnInit(): void {
     this.isLoginMode = true;
@@ -38,12 +48,12 @@ export class AuthComponent implements OnInit {
     console.log(this.authFormGroup);
     if (this.authFormGroup.valid) {
       this.isLoading = true;
-      const { email, password } = this.authFormGroup.value
+      const { email, password } = this.authFormGroup.value;
       let authObservable: Observable<IAuthLoginResponse | IAuthSignupResponse>;
       if (this.isLoginMode) {
-        authObservable = this.authService.login(email, password)
+        authObservable = this.authService.login(email, password);
       } else {
-        authObservable = this.authService.signup(email, password)
+        authObservable = this.authService.signup(email, password);
       }
       authObservable.subscribe(
         (response: IAuthLoginResponse | IAuthSignupResponse) => {
@@ -53,6 +63,7 @@ export class AuthComponent implements OnInit {
         },
         (errorMessage: string) => {
           this.error = errorMessage;
+          this.showErrorAlert(errorMessage);
           this.isLoading = false;
         }
       );
@@ -60,8 +71,33 @@ export class AuthComponent implements OnInit {
     }
   }
 
-  onAlertClose() {
+  private showErrorAlert(message: string): void {
+    //! This won't work
+    // const alertComponent = new AlertComponent();
+    const alertComponentFactory = this.componentFactoryResolver.resolveComponentFactory(AlertComponent);
+    const hostViewContainerRef = this.alerHost.viewContainerRef;
+    hostViewContainerRef.clear();
+    const alertComponentRef = hostViewContainerRef.createComponent(alertComponentFactory);
+    alertComponentRef.instance.message = message;
+    this.alerComponentSub = alertComponentRef.instance
+      .closeClicked
+      .subscribe(
+        () => {
+          this.alerComponentSub.unsubscribe();
+          hostViewContainerRef.clear();
+        }
+      );
+
+  }
+
+  onAlertClose(): void {
     this.error = null;
+  }
+
+  ngOnDestroy(): void {
+    if (this.alerComponentSub) {
+      this.alerComponentSub.unsubscribe();
+    }
   }
 
 }

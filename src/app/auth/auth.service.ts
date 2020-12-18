@@ -33,7 +33,7 @@ export class AuthService {
             this.handleAuthentication(responseData);
           }
         )
-      )
+      );
   }
 
   login(email: string, password: string): Observable<IAuthLoginResponse> | Observable<any> {
@@ -49,44 +49,44 @@ export class AuthService {
             this.handleAuthentication(responseData);
           }
         )
-      )
+      );
   }
 
   private handleError(errorResponse: HttpErrorResponse): Observable<string> {
     console.log('AuthService -> errorResponse', errorResponse);
-    let errorMessage = ''
+    let errorMessage = '';
     switch (errorResponse.error?.error?.message) {
       case 'EMAIL_EXISTS':
-        errorMessage = 'The email address is already in use by another account.'
+        errorMessage = 'The email address is already in use by another account.';
         break;
       case 'OPERATION_NOT_ALLOWED':
-        errorMessage = 'Password sign-in is disabled for this project.'
+        errorMessage = 'Password sign-in is disabled for this project.';
         break;
       case 'TOO_MANY_ATTEMPTS_TRY_LATER':
-        errorMessage = 'We have blocked all requests from this device due to unusual activity. Try again later.'
+        errorMessage = 'We have blocked all requests from this device due to unusual activity. Try again later.';
         break;
       case 'EMAIL_NOT_FOUND':
-        errorMessage = 'There is no user record corresponding to this identifier. The user may have been deleted.'
+        errorMessage = 'There is no user record corresponding to this identifier. The user may have been deleted.';
         break;
       case 'INVALID_PASSWORD':
-        errorMessage = 'The password is invalid or the user does not have a password.'
+        errorMessage = 'The password is invalid or the user does not have a password.';
         break;
       case 'USER_DISABLED':
-        errorMessage = 'The user account has been disabled by an administrator.'
+        errorMessage = 'The user account has been disabled by an administrator.';
         break;
       default:
-        errorMessage = 'An unkown error occurred.'
+        errorMessage = 'An unkown error occurred.';
         break;
     }
-    return throwError(errorMessage)
+    return throwError(errorMessage);
   }
 
   private handleAuthentication(userData: IAuthSignupResponse | IAuthLoginResponse): void {
     const { email, localId, idToken, expiresIn } = userData;
-    const expirationDate = new Date(new Date().getTime() + parseInt(expiresIn) * 1000);
+    const expirationDate = new Date(new Date().getTime() + parseInt(expiresIn, 10) * 1000);
     const user = new User(email, localId, idToken, expirationDate);
     this.localStorageService.setUserData(user);
-    this.autoLogout(parseInt(expiresIn) * 1000);
+    this.autoLogout(parseInt(expiresIn, 10) * 1000);
     this.userSubject.next(user);
   }
 

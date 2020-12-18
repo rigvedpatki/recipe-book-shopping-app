@@ -5,7 +5,7 @@ import { Ingredient } from '../shared/ingredient.model';
 @Injectable()
 export class ShoppingListService {
 
-  private ingredients: Array<Ingredient> = []
+  private ingredients: Array<Ingredient> = [];
 
   public ingredientsChanged: Subject<Array<Ingredient>>;
 
@@ -28,7 +28,7 @@ export class ShoppingListService {
     if (this.ingredients[index]) {
       return this.ingredients[index];
     } else {
-      return null
+      return null;
     }
   }
 
@@ -44,7 +44,7 @@ export class ShoppingListService {
     this.ingredientsChanged.next(this.ingredients.slice());
   }
 
-  addIngredientsToShoppingList(ingredients: Array<Ingredient>) {
+  addIngredientsToShoppingList(ingredients: Array<Ingredient>): void {
     this.ingredients = this.ingredients.concat(ingredients);
     this.ingredientsChanged.next(this.ingredients.slice());
   }
